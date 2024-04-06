@@ -30,6 +30,6 @@ setup(
     url=URL,
     install_requires=INSTALL_REQUIRES,
     packages=find_packages(),
-    entry_points={"console_scripts": ["chatgpt = chatgpt.app:main"]},
+    entry_points={"console_scripts": ["chatgpt = anonymous_chatgpt.app:main"]},
 )
 

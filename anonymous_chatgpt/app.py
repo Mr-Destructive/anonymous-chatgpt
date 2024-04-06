@@ -4,22 +4,19 @@ import json
 import uuid
 
 
-def simple_chat():
+def chat(prompt: str):
     BASE_URL = "https://chat.openai.com"
-
-    args = argparse.ArgumentParser()
-    args.add_argument("--prompt", type=str, required=True)
-    args = args.parse_args()
-
-    prompt = args.prompt
 
     # First request to get the cookies
     headers = {
         "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     }
+    resp_message = {}
 
     request_client = requests.session()
     response = request_client.get(BASE_URL, headers=headers)
+    if response.status_code != 200:
+        response.raise_for_status()
     set_cookie = response.cookies.get_dict()
 
     cookies = "; ".join([f"{key}={value}" for key, value in set_cookie.items()])
@@ -42,6 +39,8 @@ def simple_chat():
     chat_req_token = ""
     if chat_req_res.status_code == 200:
         chat_req_token = chat_req_res.json().get("token")
+    else:
+        chat_req_res.raise_for_status()
 
 
     # third request to get the response to the prompt
@@ -78,16 +77,25 @@ def simple_chat():
 
     response = request_client.post(url, headers=headers, json=data)
     if response.status_code != 200:
-        print(response.status_code, response.text)
-        return
+        resp_message["error"] = response.text
+        response.raise_for_status()
     data = response.text
     msgs = data.split("\ndata:")
     if len(msgs) > 1:
         resp = json.loads(msgs[-2])
-        print(resp["message"]["content"]["parts"][0])
+        messages = resp.get("message", {}).get("content", {}).get("parts", [])
+        if len(messages) > 0:
+            resp_message["message"] = messages[0]
+    return resp_message
 
 def main():
-    simple_chat()
+    args = argparse.ArgumentParser()
+    args.add_argument("--prompt", type=str, required=True)
+    args = args.parse_args()
+    prompt = args.prompt
+    response = chat(prompt)
+    print(response)
+
 
 if __name__ == "__main__":
     main()

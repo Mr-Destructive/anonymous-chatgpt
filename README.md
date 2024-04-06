@@ -15,8 +15,24 @@ pip install anonymous-chatgpt
 
 ## Usage
 
+### CLI
+
 ```bash
 chatgpt --prompt "hello world"
+```
+
+#### CLI Demonstration
+
+![Anonymous ChatGPT Demo](https://meetgor-cdn.pages.dev/anonymous-chatgpt-demo.gif)
+
+### Package
+
+```bash
+from anonymous_chatgpt import chat
+
+
+message = chat(prompt="hello world")
+print(message)
 ```
 
 
