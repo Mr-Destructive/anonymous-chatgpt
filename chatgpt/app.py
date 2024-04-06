@@ -86,4 +86,9 @@ def simple_chat():
         resp = json.loads(msgs[-2])
         print(resp["message"]["content"]["parts"][0])
 
+def main():
+    simple_chat()
+
+if __name__ == "__main__":
+    main()
 

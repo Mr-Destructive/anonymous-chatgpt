@@ -1,4 +1,7 @@
 from .app import simple_chat
 
-if __name__ == "__main__":
+def main():
     simple_chat()
+
+if __name__ == "__main__":
+    main()
