@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = "0.0.2"
+VERSION = "0.0.3"
 PACKAGE_NAME = "anonymous-chatgpt"
 AUTHOR = "Meet Gor"
 AUTHOR_EMAIL = "gormeet711@gmail.com"
