@@ -68,7 +68,7 @@ data = {
 
 response = request_client.post(url, headers=headers, json=data)
 data = response.text
-print(response.status_code)
+print(response.status_code, data)
 msgs = data.split("\ndata:")
 if len(msgs) > 1:
     resp = json.loads(msgs[-2])
