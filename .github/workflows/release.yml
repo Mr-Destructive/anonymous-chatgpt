@@ -1,7 +1,30 @@
-permissions:
-  contents: write
+name: Generate Changelog
 
-- name: Conventional Changelog Action
-  uses: TriPSs/conventional-changelog-action@v5
-  with:
-    github-token: ${{ secrets.CHANGELOG_RELEASE }}
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    name: Generate and Commit Changelog
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Generate Changelog
+      uses: smichard/conventional_changelog@1.0.2
+      with:
+        GITHUB_TOKEN: ${{ secrets.CHANGELOG_RELEASE }}
+
+    - name: Set Git User Info
+      run: |
+        git config user.name 'GitHub Actions Bot'
+        git config user.email 'actions@github.com'
+
+    - name: Commit Changelog
+      run: |
+        git add CHANGELOG.md
+        git commit -m "docs: :robot: changelog file generated" || echo "No changes to commit"
+        git push
