@@ -19,7 +19,12 @@ pip install anonymous-chatgpt
 
 ```bash
 chatgpt --prompt "hello world"
+
+OR 
+
+chatgpt --chat
 ```
+
 
 #### CLI Demonstration
 
@@ -27,12 +32,19 @@ chatgpt --prompt "hello world"
 
 ### Package
 
-```bash
-from anonymous_chatgpt import chat
+```python
+from anonymous_chatgpt import chat_prompt, ChatGPT
 
 
-message = chat(prompt="hello world")
+message = chat_promt(prompt="hello world")
 print(message)
+
+# For chat
+
+chatgpt = ChatGPT()
+
+resp1 = chatgpt.chat(prompt="hello, my name is John")
+resp2 = chatgpt.chat(prompt="what is my name?")
 ```
 
 
