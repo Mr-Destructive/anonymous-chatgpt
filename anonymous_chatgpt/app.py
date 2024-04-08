@@ -99,7 +99,7 @@ def chat_prompt(prompt: str):
     return resp_message
 
 
-def chat():
+def chat_cli():
     parent_id = str(uuid.uuid4())
     msg_id = str(uuid.uuid4())
     prompt = input("user >> ")
@@ -144,7 +144,7 @@ def chat():
             resp = json.loads(msgs[-2])
             messages = resp.get("message", {}).get("content", {}).get("parts", [])
             if len(messages) > 0:
-                print("bot >> ", messages[0])
+                print("chatgpt >> ", messages[0])
                 data.get("messages",[]).append(
                     {
                         "id": str(uuid.uuid4()),
@@ -155,6 +155,60 @@ def chat():
                 )
             prompt = input("user >> ")
 
+class ChatGPT:
+    def __init__(self):
+        self.parent_id = str(uuid.uuid4())
+        self.msg_id = str(uuid.uuid4())
+        self.base_conversation_config = {
+            "action": "next",
+            "messages": [
+                {
+                    "id": f"{self.msg_id}",
+                    "author": {"role": "user"},
+                    "content": {"content_type": "text", "parts": []},
+                    "metadata": {},
+                }
+            ],
+            "parent_message_id": f"{self.parent_id}",
+            "model": "text-davinci-002-render-sha",
+            "timezone_offset_min": -330,
+            "history_and_training_disabled": True,
+            "conversation_mode": {"kind": "primary_assistant"},
+            "force_paragen": False,
+            "force_paragen_model_slug": "",
+            "force_nulligen": False,
+            "force_rate_limit": False,
+        }
+        self.conversation = self.base_conversation_config
+
+    def chat(self, prompt):
+        self.prompt_message = prompt
+        data = self.conversation
+        messages = data.get("messages", [])
+        if messages:
+            messages[0].get("content", {}).get("parts", []).append(prompt)
+        self.conversation = data
+        request_client, headers = prepare_chat_request()
+        url = f"{BASE_URL}/backend-anon/conversation"
+
+        response = request_client.post(url, headers=headers, json=self.conversation)
+        if response.status_code != 200:
+            response.raise_for_status()
+        resp = response.text
+        msgs = resp.split("\ndata:")
+        if len(msgs) > 1:
+            resp = json.loads(msgs[-2])
+            messages = resp.get("message", {}).get("content", {}).get("parts", [])
+            if len(messages) > 0:
+                self.conversation.get("messages",[]).append(
+                    {
+                        "id": str(uuid.uuid4()),
+                        "author": {"role": "assistant"},
+                        "content": {"content_type": "text", "parts": [messages[0]]},
+                        "metadata": {},
+                    }
+                )
+                return messages[0]
 
 def main():
     args = argparse.ArgumentParser()
@@ -163,7 +217,7 @@ def main():
     args = args.parse_args()
     prompt = args.prompt
     if args.chat:
-        chat()
+        chat_cli()
     else:
         response = chat_prompt(prompt)
         print(response)
