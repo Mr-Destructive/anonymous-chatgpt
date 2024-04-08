@@ -1,0 +1,7 @@
+permissions:
+  contents: write
+
+- name: Conventional Changelog Action
+  uses: TriPSs/conventional-changelog-action@v5
+  with:
+    github-token: ${{ secrets.CHANGELOG_RELEASE }}
