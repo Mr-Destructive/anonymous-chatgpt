@@ -5,13 +5,14 @@ import uuid
 
 
 BASE_URL = "https://chat.openai.com"
+USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
 
 
 def prepare_chat_request():
 
     # First request to get the cookies
     headers = {
-        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+        "user-agent": USER_AGENT
     }
 
     request_client = requests.session()
@@ -32,7 +33,7 @@ def prepare_chat_request():
         "oai-language": "en-US",
         "origin": "https://chat.openai.com",
         "referer": "https://chat.openai.com/",
-        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        "user-agent": USER_AGENT,
     }
 
     # second request to get the OpenAI's Sentinel token
@@ -51,7 +52,7 @@ def prepare_chat_request():
 
 def chat_prompt(prompt: str):
     headers = {
-        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+        "user-agent": USER_AGENT, 
     }
     resp_message = {}
 
@@ -99,20 +100,12 @@ def chat_prompt(prompt: str):
     return resp_message
 
 
-def chat_cli():
+def chat_cli(dump_file=None):
     parent_id = str(uuid.uuid4())
-    msg_id = str(uuid.uuid4())
     prompt = input("user >> ")
     data = {
         "action": "next",
-        "messages": [
-            {
-                "id": f"{msg_id}",
-                "author": {"role": "user"},
-                "content": {"content_type": "text", "parts": [f"{prompt}"]},
-                "metadata": {},
-            }
-        ],
+        "messages": [],
         "parent_message_id": f"{parent_id}",
         "model": "text-davinci-002-render-sha",
         "timezone_offset_min": -330,
@@ -153,7 +146,14 @@ def chat_cli():
                         "metadata": {},
                     }
                 )
-            prompt = input("user >> ")
+            try:
+                prompt = input("user >> ")
+            except KeyboardInterrupt:
+                break
+
+    if dump_file:
+        with open(dump_file, "w") as f:
+            json.dump(data, f)
 
 class ChatGPT:
     def __init__(self):
@@ -181,7 +181,7 @@ class ChatGPT:
         }
         self.conversation = self.base_conversation_config
 
-    def chat(self, prompt):
+    def chat(self, prompt, dump_file=None):
         self.prompt_message = prompt
         data = self.conversation
         messages = data.get("messages", [])
@@ -209,15 +209,19 @@ class ChatGPT:
                     }
                 )
                 return messages[0]
+        if dump_file:
+            with open(dump_file, "w") as f:
+                json.dump(data, f)
 
 def main():
     args = argparse.ArgumentParser()
     args.add_argument("--prompt", type=str)
     args.add_argument("--chat", action="store_true")
+    args.add_argument("--dump", type=str, required=False)
     args = args.parse_args()
     prompt = args.prompt
     if args.chat:
-        chat_cli()
+        chat_cli(dump_file=args.dump)
     else:
         response = chat_prompt(prompt)
         print(response)
