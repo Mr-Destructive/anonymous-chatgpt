@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/Mr-Destructive/anonymous-chatgpt/compare/v0.1.0...v0.1.1) (2024-04-11)
+
+
+### Bug Fixes
+
+* keyboard interrupt and dump of response ([1b67b56](https://github.com/Mr-Destructive/anonymous-chatgpt/commit/1b67b56016f2b113817f3357393a354fde68d278))
+
 ## [0.1.0](https://github.com/Mr-Destructive/anonymous-chatgpt/compare/v0.0.1...v0.1.0) (2024-04-08)
 
 
