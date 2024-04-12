@@ -50,7 +50,7 @@ def prepare_chat_request():
     return request_client, headers
 
 
-def chat_prompt(prompt: str):
+def chat_prompt(prompt: str, model: str="text-davinci-002-render-sha"):
     headers = {
         "user-agent": USER_AGENT, 
     }
@@ -76,7 +76,7 @@ def chat_prompt(prompt: str):
             }
         ],
         "parent_message_id": f"{parent_id}",
-        "model": "text-davinci-002-render-sha",
+        "model": model,
         "timezone_offset_min": -330,
         "history_and_training_disabled": True,
         "conversation_mode": {"kind": "primary_assistant"},
@@ -100,14 +100,14 @@ def chat_prompt(prompt: str):
     return resp_message
 
 
-def chat_cli(dump_file=None):
+def chat_cli(dump_file=None, model="text-davinci-002-render-sha"):
     parent_id = str(uuid.uuid4())
     prompt = input("user >> ")
     data = {
         "action": "next",
         "messages": [],
         "parent_message_id": f"{parent_id}",
-        "model": "text-davinci-002-render-sha",
+        "model": model,
         "timezone_offset_min": -330,
         "history_and_training_disabled": True,
         "conversation_mode": {"kind": "primary_assistant"},
@@ -148,7 +148,7 @@ def chat_cli(dump_file=None):
                 )
             try:
                 prompt = input("user >> ")
-            except KeyboardInterrupt:
+            except (KeyboardInterrupt, EOFError):
                 break
 
     if dump_file:
@@ -218,12 +218,13 @@ def main():
     args.add_argument("--prompt", type=str)
     args.add_argument("--chat", action="store_true")
     args.add_argument("--dump", type=str, required=False)
+    args.add_argument("--model", type=str, required=False, default="text-davinci-002-render-sha")
     args = args.parse_args()
     prompt = args.prompt
     if args.chat:
-        chat_cli(dump_file=args.dump)
+        chat_cli(model=args.model, dump_file=args.dump)
     else:
-        response = chat_prompt(prompt)
+        response = chat_prompt(prompt, model=args.model)
         print(response)
 
 if __name__ == "__main__":
