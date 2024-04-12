@@ -8,8 +8,6 @@ on:
 permissions:
   contents: write
 
-name: release-please
-
 jobs:
   release-please:
     runs-on: ubuntu-latest
