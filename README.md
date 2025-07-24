@@ -1,5 +1,7 @@
 # Anonymous ChatGPT Client 
 
+> THIS PACKAGE/REPOSITORY IS NO LONGER MAINTAINED AS ITS CORE FUNCTIONALITY IS BLOCKED FROM OPENAI API (CAN'T BYPASS THE SECURITY CHECKS AND AUTHENTICATION WITHOUT CAPTCHA)
+
 - Access basic ChatGPT model without authentication
 
 OpenAI recently made the ChatGPT model accessible anonymously. You can access it without authentication.
